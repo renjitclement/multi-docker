@@ -1,0 +1,24 @@
+sudo required
+##specify docker as dependency
+services:
+  - docker
+
+##build test version of react project.
+before_install:
+  - docker build -t renjitclement/react-test -f ./client/Dockerfile.dev ./client
+script:
+  - docker run renjitclement/react-test npm test -- --coverage
+
+## once the tests are run, run the production builds to create images.
+after_success:
+  - docker build -t renjitclement/multi-client ./client
+  - docker build -t renjitclement/multi-server ./server
+  - docker build -t renjitclement/multi-worker ./worker
+  - docker nuild -t renjitclement/multi-nginx ./nginx
+  #login to docker cli
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  #take those images  and put them to docker hub
+  - docker push renjitclement/multi-client
+  - docker push renjitclement/multi-server
+  - docker push renjitclement/multi-worker
+  - docker push renjitclement/multi-nginx
