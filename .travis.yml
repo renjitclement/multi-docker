@@ -1,4 +1,4 @@
-sudo required
+sudo: required
 ##specify docker as dependency
 services:
   - docker
