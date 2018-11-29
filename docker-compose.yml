@@ -1,0 +1,49 @@
+version: '3'
+services:
+  postgres:
+    image: 'postgres:latest'
+  redis:
+    image: 'redis:latest'
+  nginx_router:
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - '3050:80'
+  ##earlier it was named server, now renamed to serverapi due to an issue with nginx
+  serverapi:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server
+    volumes:
+      - /usr/apps/node_modules
+      - ./server:/usr/apps
+    environment:
+    - REDIS_HOST=redis
+    - REDIS_PORT=6379
+    - PGUSER=postgres
+    - PGHOST=postgres
+    - PGDATABASE=postgres
+    - PGPASSWORD=postgres_password
+    - PGPORT=5432
+## config for client app as servvice
+  client:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      - /usr/apps/node_modules
+      - ./client:/user/apps
+
+  ##config for worker as services
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+      - /usr/apps/node_modules
+      - ./worker:/user/apps
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
