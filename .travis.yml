@@ -14,7 +14,7 @@ after_success:
   - docker build -t renjitclement/multi-client ./client
   - docker build -t renjitclement/multi-server ./server
   - docker build -t renjitclement/multi-worker ./worker
-  - docker nuild -t renjitclement/multi-nginx ./nginx
+  - docker build -t renjitclement/multi-nginx ./nginx
   #login to docker cli
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   #take those images  and put them to docker hub
